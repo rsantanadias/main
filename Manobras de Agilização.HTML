@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OVERVIEW - Agilizações Portuárias</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: white;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd;
+        }
+        .title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1a73e8;
+            margin: 0;
+        }
+        .subtitle {
+            font-size: 16px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .info-box {
+            background-color: #e8f0fe;
+            border-left: 4px solid #1a73e8;
+            padding: 15px;
+            margin-bottom: 25px;
+            border-radius: 4px;
+        }
+        .info-box h3 {
+            margin-top: 0;
+            color: #1a73e8;
+        }
+        .kpi-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .kpi-card {
+            flex: 1;
+            min-width: 200px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 0 10px 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .kpi-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1a73e8;
+            margin: 10px 0;
+        }
+        .kpi-label {
+            font-size: 14px;
+            color: #666;
+        }
+        .kpi-sub {
+            font-size: 12px;
+            color: #888;
+            font-style: italic;
+        }
+        .chart-row {
+            display: flex;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .chart-container {
+            flex: 1;
+            min-width: 300px;
+            height: 300px;
+            margin: 0 10px 20px;
+            padding: 15px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .chart-title {
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        .full-width {
+            flex: 100%;
+            height: 400px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #f0f0f0;
+            font-weight: bold;
+        }
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        .footer {
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+            margin-top: 40px;
+            padding-top: 15px;
+            border-top: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">OVERVIEW - Agilizações Portuárias</h1>
+            <p class="subtitle">Análise de 1.670 operações de agilização no Porto de Santos</p>
+        </div>
+
+        <div class="info-box">
+            <h3>O que é uma Agilização?</h3>
+            <p>No Porto de Santos, uma <strong>agilização</strong> ocorre quando um navio entra no canal <strong>antes</strong> da saída completa de outra embarcação ou com intervalo menor que 3 horas entre eles. Devido à natureza sinuosa do canal natural, estas operações exigem planejamento preciso para permitir o cruzamento seguro das embarcações <strong>dentro</strong> do porto, otimizando significativamente o fluxo de navios.</p>
+        </div>
+
+        <div class="kpi-row">
+            <div class="kpi-card">
+                <div class="kpi-label">Total de Agilizações</div>
+                <div class="kpi-value">1.670</div>
+                <div class="kpi-sub">Operações de cruzamento em 2020</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Tempo Total Economizado</div>
+                <div class="kpi-value">2.505h</div>
+                <div class="kpi-sub">Aprox. 104 dias de operação</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Média por Agilização</div>
+                <div class="kpi-value">1,5h</div>
+                <div class="kpi-sub">Ganho médio de tempo</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-label">Economia Estimada</div>
+                <div class="kpi-value">$5.2M</div>
+                <div class="kpi-sub">Baseado em custos operacionais</div>
+            </div>
+        </div>
+
+        <div class="chart-row">
+            <div class="chart-container">
+                <div class="chart-title">Distribuição de Agilizações por Terminal</div>
+                <canvas id="terminal-chart"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Tipos de Embarcação em Agilizações</div>
+                <canvas id="vessel-type-chart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-row">
+            <div class="chart-container">
+                <div class="chart-title">Tempo Médio Ganho por Terminal (horas)</div>
+                <canvas id="time-saved-chart"></canvas>
+            </div>
+            <div class="chart-container">
+                <div class="chart-title">Eficiência das Agilizações por Período</div>
+                <canvas id="efficiency-chart"></canvas>
+            </div>
+        </div>
+
+        <div class="chart-row">
+            <div class="chart-container full-width">
+                <div class="chart-title">Tempo de Cruzamento vs. Calado das Embarcações</div>
+                <div id="crossing-draft-chart" style="width:100%;height:100%;"></div>
+            </div>
+        </div>
+
+        <h2 style="margin-top: 30px; color: #1a73e8;">Top 10 Pontos de Cruzamento no Canal</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Localização</th>
+                    <th>Agilizações</th>
+                    <th>Tempo Médio (min)</th>
+                    <th>Calado Máximo (m)</th>
+                    <th>Taxa de Sucesso (%)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Entrada BTP - Canal Principal</td>
+                    <td>248</td>
+                    <td>42</td>
+                    <td>13.5</td>
+                    <td>96.8%</td>
+                </tr>
+                <tr>
+                    <td>Curva do Valongo</td>
+                    <td>221</td>
+                    <td>38</td>
+                    <td>12.8</td>
+                    <td>95.2%</td>
+                </tr>
+                <tr>
+                    <td>Alamoa - Canal Principal</td>
+                    <td>197</td>
+                    <td>45</td>
+                    <td>12.7</td>
+                    <td>94.9%</td>
+                </tr>
+                <tr>
+                    <td>Outeirinhos - Terminal 20/21</td>
+                    <td>183</td>
+                    <td>36</td>
+                    <td>11.2</td>
+                    <td>93.6%</td>
+                </tr>
+                <tr>
+                    <td>Acesso TEC - Canal Principal</td>
+                    <td>165</td>
+                    <td>40</td>
+                    <td>13.1</td>
+                    <td>94.7%</td>
+                </tr>
+                <tr>
+                    <td>Ponte Pênsil - Canal Principal</td>
+                    <td>152</td>
+                    <td>51</td>
+                    <td>12.5</td>
+                    <td>92.3%</td>
+                </tr>
+                <tr>
+                    <td>EMB - Terminal 38/39</td>
+                    <td>138</td>
+                    <td>39</td>
+                    <td>11.7</td>
+                    <td>93.5%</td>
+                </tr>
+                <tr>
+                    <td>Saboó - Canal Principal</td>
+                    <td>127</td>
+                    <td>44</td>
+                    <td>12.0</td>
+                    <td>91.8%</td>
+                </tr>
+                <tr>
+                    <td>Ilha Barnabé - Canal Principal</td>
+                    <td>119</td>
+                    <td>47</td>
+                    <td>10.8</td>
+                    <td>90.5%</td>
+                </tr>
+                <tr>
+                    <td>Terminal 32/33 - Canal Principal</td>
+                    <td>112</td>
+                    <td>41</td>
+                    <td>11.5</td>
+                    <td>91.2%</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="footer">
+            <p>Análise de Agilizações Portuárias - Porto de Santos | Atualizado em 29/04/2025</p>
+        </div>
+    </div>
+
+    <script>
+        // Gráfico de pizza - Tipos de Embarcação em Agilizações
+        const vesselTypeCtx = document.getElementById('vessel-type-chart').getContext('2d');
+        new Chart(vesselTypeCtx, {
+            type: 'pie',
+            data: {
+                labels: ['Container Ship', 'Bulk Carrier', 'Chemical/Tanker', 'Open Hatch', 'Outros'],
+                datasets: [{
+                    data: [41, 38, 13, 4, 4],
+                    backgroundColor: [
+                        '#4285f4',
+                        '#ea4335', 
+                        '#fbbc04',
+                        '#34a853',
+                        '#9c27b0'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'right',
+                    }
+                }
+            }
+        });
+        
+        // Gráfico de barras - Distribuição de Agilizações por Terminal
+        const terminalCtx = document.getElementById('terminal-chart').getContext('2d');
+        new Chart(terminalCtx, {
+            type: 'bar',
+            data: {
+                labels: ['BTP', 'EMB', 'TEC', 'Terminais Numerados', 'Outros'],
+                datasets: [{
+                    label: 'Número de Agilizações',
+                    data: [407, 246, 212, 335, 470],
+                    backgroundColor: '#4285f4',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        
+        // Gráfico de barras - Tempo Médio Ganho por Terminal
+        const timeSavedCtx = document.getElementById('time-saved-chart').getContext('2d');
+        new Chart(timeSavedCtx, {
+            type: 'bar',
+            data: {
+                labels: ['BTP-1', 'BTP-2', 'BTP-3', 'EMB-1', 'EMB-2', 'EMB-3', 'TEC-1', 'TEC-2', 'TEC-3'],
+                datasets: [{
+                    label: 'Tempo (horas)',
+                    data: [1.84, 2.00, 2.06, 1.39, 2.17, 1.74, 2.42, 1.46, 1.14],
+                    backgroundColor: '#fbbc04',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+        
+        // Gráfico de linha - Eficiência das Agilizações por Período
+        const efficiencyCtx = document.getElementById('efficiency-chart').getContext('2d');
+        new Chart(efficiencyCtx, {
+            type: 'line',
+            data: {
+                labels: ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'],
+                datasets: [{
+                    label: 'Eficiência (%)',
+                    data: [85, 87, 86, 88, 89, 91, 93, 92, 90, 91, 92, 95],
+                    borderColor: '#34a853',
+                    backgroundColor: 'rgba(52, 168, 83, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        min: 80,
+                        max: 100
+                    }
+                }
+            }
+        });
+        
+        // Gráfico de dispersão - Tempo de Cruzamento vs. Calado
+        Plotly.newPlot('crossing-draft-chart', [
+            {
+                name: 'Container Ships',
+                x: [8.5, 9.6, 10.4, 11.2, 12.1, 12.8, 13.5],
+                y: [28, 32, 36, 41, 45, 50, 56],
+                mode: 'markers',
+                type: 'scatter',
+                marker: {
+                    size: 10,
+                    color: '#4285f4'
+                }
+            },
+            {
+                name: 'Bulk Carriers',
+                x: [7.5, 8.2, 9.3, 10.7, 11.4, 12.2, 13.0],
+                y: [25, 30, 35, 38, 44, 48, 53],
+                mode: 'markers',
+                type: 'scatter',
+                marker: {
+                    size: 10,
+                    color: '#ea4335'
+                }
+            },
+            {
+                name: 'Tankers',
+                x: [7.0, 7.8, 8.5, 9.2, 10.1, 10.8],
+                y: [24, 28, 32, 35, 40, 45],
+                mode: 'markers',
+                type: 'scatter',
+                marker: {
+                    size: 10,
+                    color: '#fbbc04'
+                }
+            }
+        ], {
+            margin: { t: 10, l: 60, r: 30, b: 50 },
+            xaxis: {
+                title: 'Calado (metros)'
+            },
+            yaxis: {
+                title: 'Tempo de Cruzamento (minutos)'
+            },
+            showlegend: true,
+            legend: {
+                x: 0,
+                y: 1
+            }
+        });
+    </script>
+</body>
+</html>
